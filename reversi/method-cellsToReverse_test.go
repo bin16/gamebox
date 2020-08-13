@@ -4,6 +4,7 @@ import "testing"
 
 func TestCellsToReverse(t *testing.T) {
 	g := NewGame()
+	g.Status = GameStatusStarted
 
 	c := Black
 	n := "f4"

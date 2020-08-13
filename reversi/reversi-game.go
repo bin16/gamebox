@@ -1,20 +1,29 @@
 package reversi
 
+import (
+	"github.com/google/uuid"
+)
+
 // Side is Color of
 type Side int
 
 // Side colors
 const (
 	Blank Side = iota
-	White
 	Black
+	White
 
-	GameStatusOpen = "open"
+	GameStatusOpen    = "open"
+	GameStatusReady   = "ready"
+	GameStatusStarted = "started"
+	GameStatusEnded   = "ended"
 )
 
 // NewGame -> New Reversi Game
 func NewGame() *Game {
+	id := uuid.Must(uuid.NewRandom())
 	g := &Game{
+		ID:     id.String(),
 		Status: GameStatusOpen,
 	}
 	g.Board[3][3] = Black
@@ -27,19 +36,21 @@ func NewGame() *Game {
 		[3]int{int(Black), 4, 4},
 		[3]int{int(White), 4, 3},
 	}
+	g.Players = []string{}
 
 	return g
 }
 
 // Game of Reversi
 type Game struct {
-	ID      int        `json:"id"`
+	ID      string     `json:"id"`
 	Status  string     `json:"status"`
 	Board   [8][8]Side `json:"board"`
 	History [][3]int   `json:"history"` // Color,X,Y
+	Players []string   `json:"players"`
 }
 
-// getRoomes return all available cells, for specific color
+// getRooms return all available cells, for specific color
 func (g *Game) getRooms(c Side) [][2]int {
 	cells := [][2]int{}
 	for x := 0; x < len(g.Board); x++ {
@@ -180,6 +191,10 @@ func (g *Game) topLeftOf(x, y int) []Side {
 }
 
 func (g *Game) nextPlayer() Side {
+	if g.Status != GameStatusStarted {
+		return Blank
+	}
+
 	p1c := g.History[len(g.History)-1][0]
 	p1 := Side(p1c)
 
