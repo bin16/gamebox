@@ -11,27 +11,20 @@ func TestCellsToReverse(t *testing.T) {
 	g.Status = GameStatusStarted
 
 	c := Black
-	n := "f4"
+	n := "f5"
 	x, y := g.indexOf(n)
-	if x != 5 || y != 3 {
-		t.Errorf("g.indexOf failed: %s -> %d,%d; want %d,%d", n, x, y, 5, 3)
+	if x != 5 || y != 4 {
+		t.Errorf("Failed to run g.indexOf(%s); got %d,%d; want %d,%d", n, x, y, 5, 3)
 	}
 
 	cells := g.cellsToReserve(c, x, y)
 	if len(cells) != 1 {
-		t.Errorf("g.cellsToReverse failed: %d,%d;%d %v", x, y, c, cells)
-	}
-	g.Play(p1, n)
-
-	np := g.nextPlayer()
-	if np != g.reverseOf(c) {
-		t.Errorf("g.nextPlayer/g.reverseOf failed: nextPlayer is %d, want %d", np, g.reverseOf(c))
-	}
-
-	g.Play(p2, "d3")
-	rooms := g.getRooms(c)
-	if len(rooms) != 5 {
 		g.print()
-		t.Errorf("g.Play may failed: %v", rooms)
+		t.Errorf("Failed to run g.cellsToReverse(%d, %d ,%d); got %v", c, x, y, cells)
+	}
+
+	if err := g.Play(p1, n); err != nil {
+		g.print()
+		t.Errorf("Failed to run g.Play(%s, %s); got error %v", p1, n, err)
 	}
 }
