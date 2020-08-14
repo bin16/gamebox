@@ -28,6 +28,11 @@ func (g *Game) Play(playerID, cmd string) error {
 	g.Board[x][y] = s
 	g.History = append(g.History, [3]int{int(s), x, y})
 
+	if len(g.History) == boardSize*boardSize {
+		g.Status = StatusEnded
+		return g.errorOf(GameEnd) // TODO: check here
+	}
+
 	return nil
 }
 

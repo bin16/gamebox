@@ -26,6 +26,7 @@ const (
 	ErrorGameNotStarted             // Failed to play
 	ErrorNotYourTurn                // Failed to play
 	ErrorBadCommand                 // Failed to play
+	GameEnd
 
 	boardSize = 3
 )
