@@ -3,7 +3,11 @@ package reversi
 import "testing"
 
 func TestCellsToReverse(t *testing.T) {
+	p1 := "Foo"
+	p2 := "Bar"
 	g := NewGame()
+	g.Join(p1)
+	g.Join(p2)
 	g.Status = GameStatusStarted
 
 	c := Black
@@ -17,14 +21,14 @@ func TestCellsToReverse(t *testing.T) {
 	if len(cells) != 1 {
 		t.Errorf("g.cellsToReverse failed: %d,%d;%d %v", x, y, c, cells)
 	}
-	g.Play(c, n)
+	g.Play(p1, n)
 
 	np := g.nextPlayer()
 	if np != g.reverseOf(c) {
 		t.Errorf("g.nextPlayer/g.reverseOf failed: nextPlayer is %d, want %d", np, g.reverseOf(c))
 	}
 
-	g.Play(np, "d3")
+	g.Play(p2, "d3")
 	rooms := g.getRooms(c)
 	if len(rooms) != 5 {
 		g.print()

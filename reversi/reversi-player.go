@@ -31,14 +31,16 @@ func (g *Game) Join(playerID string) error {
 	return nil
 }
 
-func (g *Game) SideOfPlayer(playerID string) Side {
-	if !g.playerInGame(playerID) {
-		return Blank
-	}
-
+// sideOfPlayer return Side of player, Black of White,
+// and Blank if player not in game
+func (g *Game) sideOfPlayer(playerID string) Side {
 	for i, id := range g.Players {
 		if id == playerID {
-			return Side(i + 1)
+			if i == 0 {
+				return Black
+			} else if i == 1 {
+				return White
+			}
 		}
 	}
 
@@ -55,7 +57,7 @@ func (g *Game) InfoOfPlayer(playerID string) map[string]interface{} {
 		}
 	}
 
-	c := g.SideOfPlayer(playerID)
+	c := g.sideOfPlayer(playerID)
 	if c != g.nextPlayer() {
 		return map[string]interface{}{
 			"id":    playerID,

@@ -5,9 +5,18 @@ import (
 	"strings"
 )
 
+func (g *Game) errorOf(errCode ErrorCode) error {
+	return fmt.Errorf(g.Dict()[errCode])
+}
+
 // Play reversi TODO: comment
-func (g *Game) Play(c Side, name string) error {
-	x, y := g.indexOf(name)
+func (g *Game) Play(playerID, cmd string) error {
+	c := g.sideOfPlayer(playerID)
+	if c == Blank {
+		return g.errorOf(ErrorNotInGame)
+	}
+
+	x, y := g.indexOf(cmd)
 	if err := g.checkNext(c, x, y); err != nil {
 		return err
 	}

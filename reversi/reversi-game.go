@@ -4,21 +4,6 @@ import (
 	"github.com/google/uuid"
 )
 
-// Side is Color of
-type Side int
-
-// Side colors
-const (
-	Blank Side = iota
-	Black
-	White
-
-	GameStatusOpen    = "open"
-	GameStatusReady   = "ready"
-	GameStatusStarted = "started"
-	GameStatusEnded   = "ended"
-)
-
 // NewGame -> New Reversi Game
 func NewGame() *Game {
 	id := uuid.Must(uuid.NewRandom())
@@ -44,7 +29,7 @@ func NewGame() *Game {
 // Game of Reversi
 type Game struct {
 	ID      string     `json:"id"`
-	Status  string     `json:"status"`
+	Status  Status     `json:"status"`
 	Board   [8][8]Side `json:"board"`
 	History [][3]int   `json:"history"` // Color,X,Y
 	Players []string   `json:"players"`
