@@ -1,26 +1,10 @@
 package reversi
 
-import (
-	"fmt"
-)
-
-func (g *Game) playerInGame(playerID string) bool {
-	for _, p := range g.Players {
-		if p == playerID {
-			return true
-		}
-	}
-
-	return false
-}
-
+// Join check and add a playerID into game, and
+// automatically change game status to GameStatusStarted
 func (g *Game) Join(playerID string) error {
 	if g.Status != GameStatusOpen {
-		return fmt.Errorf("GAME_NOT_OPEN")
-	}
-
-	if len(g.Players) >= 2 {
-		return fmt.Errorf("GAME_IS_FULL")
+		return g.errorOf(ErrorGameNotOpen)
 	}
 
 	g.Players = append(g.Players, playerID)
@@ -29,6 +13,17 @@ func (g *Game) Join(playerID string) error {
 	}
 
 	return nil
+}
+
+// TODO: remove
+func (g *Game) playerInGame(playerID string) bool {
+	for _, p := range g.Players {
+		if p == playerID {
+			return true
+		}
+	}
+
+	return false
 }
 
 // sideOfPlayer return Side of player, Black of White,
@@ -47,6 +42,7 @@ func (g *Game) sideOfPlayer(playerID string) Side {
 	return Blank
 }
 
+// TODO: add dict
 func (g *Game) InfoOfPlayer(playerID string) map[string]interface{} {
 	if !g.playerInGame(playerID) {
 		return map[string]interface{}{

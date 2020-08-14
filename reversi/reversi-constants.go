@@ -24,6 +24,9 @@ const (
 	ErrorNotInGame ErrorCode = iota
 	ErrorNotYourTurn
 	ErrorBadRequest
+	ErrorGameNotOpen
+	ErrorGameIsFull
+	ErrorGameEnded
 )
 
 // DictEntry has a key of int codes and value of string
@@ -42,5 +45,8 @@ func (g *Game) Dict() DictEntry {
 		ErrorNotInGame:    "You are not in game",
 		ErrorNotYourTurn:  "It's not your turn",
 		ErrorBadRequest:   "Bad Request",
+		ErrorGameNotOpen:  "Failed to join game, it is not open",
+		ErrorGameIsFull:   "Failed to join game, it is full",
+		ErrorGameEnded:    "Game ended",
 	}
 }

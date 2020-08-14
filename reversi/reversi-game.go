@@ -115,20 +115,7 @@ func (g *Game) reverseOf(c Side) Side {
 }
 
 func (g *Game) topOf(x, y int) []Side {
-	line := []Side{}
-	if y == 0 {
-		return line
-	}
-
-	x1 := x
-	y1 := y
-	for {
-		y1--
-		line = append(line, g.Board[x1][y1])
-		if y1 == 0 {
-			break
-		}
-	}
+	line, _ := g.lineOf(x, y, 0, -1)
 
 	return line
 }

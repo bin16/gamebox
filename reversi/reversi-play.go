@@ -31,22 +31,23 @@ func (g *Game) Play(playerID, cmd string) error {
 	return nil
 }
 
+// checkNext check if a side could be played
 func (g *Game) checkNext(c Side, x, y int) error {
 	n := g.nextPlayer()
 	if n == Blank {
-		return fmt.Errorf("GAME_ENDED")
+		return g.errorOf(ErrorGameEnded)
 	}
 
-	if g.nextPlayer() != c {
-		return fmt.Errorf("NOT_YOUR_TURN")
+	if n != c {
+		return g.errorOf(ErrorNotYourTurn)
 	}
 
 	if x < 0 || x > 7 || y < 0 || y > 7 {
-		return fmt.Errorf("BAD_REQUEST")
+		return g.errorOf(ErrorBadRequest)
 	}
 
 	if !g.roomIsValid(c, x, y) {
-		return fmt.Errorf("BAD_REQUEST")
+		return g.errorOf(ErrorBadRequest)
 	}
 
 	return nil
@@ -72,10 +73,12 @@ func (g *Game) cellsToReserve(c Side, x, y int) [][2]int {
 	return cells
 }
 
+// nameOf translate 2,3 into c4
 func (g *Game) nameOf(x, y int) string {
 	return fmt.Sprintf("%s%d", string('a'+x), y+1)
 }
 
+// indexOf translate c4 into 2,3
 func (g *Game) indexOf(name string) (int, int) {
 	t := strings.ToLower(name)
 	return int(rune(t[0]) - 'a'), int(rune(t[1]) - '1')
