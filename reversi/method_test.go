@@ -5,23 +5,23 @@ import (
 )
 
 func (g *Game) print() {
+	last := g.History[len(g.History)-1]
 	cn := g.nextPlayer()
-	var cw, cb int
 	s := ""
 	for y := 0; y < 8; y++ {
 		r := fmt.Sprintf("|%d|", y+1)
 		for x := 0; x < 8; x++ {
 			c := g.Board[x][y]
-			if c == White {
-				cw++
-				r += "w|"
-			} else if c == Black {
-				cb++
-				r += "b|"
-			} else if cn != Blank && g.roomIsValid(cn, x, y) {
-				r += "O|"
+			if last[1] == x && last[2] == y {
+				r += pieceHistoryFace(c)
+			} else if cn != Blank {
+				if g.roomIsValid(cn, x, y) {
+					r += pieceOkFace(cn)
+				} else {
+					r += pieceFace(c)
+				}
 			} else {
-				r += "_|"
+				r += pieceFace(c)
 			}
 		}
 		r += fmt.Sprintf("%d|\n", y)
@@ -40,10 +40,35 @@ func (g *Game) print() {
 		}
 	}
 
+	score := g.scoreOf()
 	fmt.Printf(`================
-w: %d, b %d
+w: %d, b %d, now: %s
 |_|a_b_c_d_e_f_g_h|_|
 %s|_|0_1_2_3_4_5_6_7|_|
 ----
-%s================`, cw, cb, s, history)
+%s================`, score[0], score[1], pieceFace(g.nextPlayer()), s, history)
+}
+
+func pieceFace(c Side) string {
+	if c == Black {
+		return "🌑"
+	} else if c == White {
+		return "🌕"
+	}
+
+	return "⬜"
+}
+
+func pieceOkFace(c Side) string {
+	return "🌙"
+}
+
+func pieceHistoryFace(c Side) string {
+	if c == Black {
+		return "🌚"
+	} else if c == White {
+		return "🌝"
+	}
+
+	return ""
 }

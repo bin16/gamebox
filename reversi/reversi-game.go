@@ -11,15 +11,15 @@ func NewGame() *Game {
 		ID:     id.String(),
 		Status: GameStatusOpen,
 	}
-	g.Board[3][3] = Black
-	g.Board[4][4] = Black
-	g.Board[3][4] = White
-	g.Board[4][3] = White
+	g.Board[3][3] = White
+	g.Board[4][4] = White
+	g.Board[3][4] = Black
+	g.Board[4][3] = Black
 	g.History = [][3]int{
-		[3]int{int(Black), 3, 3},
-		[3]int{int(White), 3, 4},
-		[3]int{int(Black), 4, 4},
-		[3]int{int(White), 4, 3},
+		[3]int{int(Black), 3, 4},
+		[3]int{int(White), 3, 3},
+		[3]int{int(Black), 4, 3},
+		[3]int{int(White), 4, 4},
 	}
 	g.Players = []string{}
 

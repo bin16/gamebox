@@ -60,7 +60,7 @@ func (g *Game) cellsToReserve(c Side, x, y int) [][2]int {
 		for _, dy := range d {
 			pieces, line := g.lineOf(x, y, dx, dy)
 			for i, p := range pieces {
-				if p == c && i >= 1 {
+				if p == c {
 					cells = append(cells, line[:i]...)
 					break
 				} else if p == Blank {
@@ -71,6 +71,24 @@ func (g *Game) cellsToReserve(c Side, x, y int) [][2]int {
 	}
 
 	return cells
+}
+
+// scoreOf() return piece count of Black, White and total
+func (g *Game) scoreOf() [3]int {
+	cb := 0
+	cw := 0
+	for x := 0; x < 8; x++ {
+		for y := 0; y < 8; y++ {
+			b := g.Board[x][y]
+			if b == Black {
+				cb++
+			} else if b == White {
+				cw++
+			}
+		}
+	}
+
+	return [3]int{cb, cw, cb + cw}
 }
 
 // nameOf translate 2,3 into c4
