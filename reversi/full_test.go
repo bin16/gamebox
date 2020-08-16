@@ -6,11 +6,11 @@ import (
 )
 
 func TestAll(t *testing.T) {
-	p1 := "Bob"  // Black
-	p2 := "Will" // White
+	p1 := "Foo" // Black
+	p2 := "Bar" // White
 	g := NewGame()
-	g.Join(p1)
-	g.Join(p2)
+	mustJoin(t, g)(p1)
+	mustJoin(t, g)(p2)
 	steps := `1 f5
 2 d6
 1 c3
@@ -71,22 +71,6 @@ func TestAll(t *testing.T) {
 1 h8
 2 h7
 1 g7`
-	checkPlay := func(playerID, cmd string) {
-		err := g.Play(playerID, cmd)
-		if err != nil {
-			g.print()
-			t.Fatalf("Failed to run g.Play(%s, %s), err: %v", playerID, cmd, err)
-		}
-	}
-	checkScore := func(s []int) {
-		sc := g.scoreOf()
-		for i, v := range sc {
-			if s[i] != v {
-				g.print()
-				t.Fatalf("Failed to run g.scoreOf(), got %v, want %v", sc, s)
-			}
-		}
-	}
 	name := func(num string) string {
 		if num == "1" {
 			return p1
@@ -96,7 +80,7 @@ func TestAll(t *testing.T) {
 	}
 	for _, s := range strings.Split(steps, "\n") {
 		r := strings.Split(s, " ")
-		checkPlay(name(r[0]), r[1])
+		mustPlay(t, g)(name(r[0]), r[1])
 	}
-	checkScore([]int{39, 25, 64})
+	assertScoreIs(t, g)([3]int{39, 25, 64})
 }

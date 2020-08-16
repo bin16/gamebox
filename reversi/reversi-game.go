@@ -35,8 +35,8 @@ type Game struct {
 	Players []string   `json:"players"`
 }
 
-// getRooms return all available cells, for specific color
-func (g *Game) getRooms(c Side) [][2]int {
+// getAccessibleCells return all available cells, for specific color
+func (g *Game) getAccessibleCells(c Side) [][2]int {
 	cells := [][2]int{}
 	for x := 0; x < len(g.Board); x++ {
 		for y := 0; y < len(g.Board[0]); y++ {
@@ -47,6 +47,16 @@ func (g *Game) getRooms(c Side) [][2]int {
 	}
 
 	return cells
+}
+
+func (g *Game) getOptions(c Side) []string {
+	l := []string{}
+	for _, p := range g.getAccessibleCells(c) {
+		c := g.nameOf(p[0], p[1])
+		l = append(l, c)
+	}
+
+	return l
 }
 
 func (g *Game) lineIsValid(c Side, line []Side) bool {
@@ -162,7 +172,25 @@ func (g *Game) topLeftOf(x, y int) []Side {
 	return line
 }
 
-func (g *Game) nextPlayer() Side {
+func (g *Game) winnerSide() Side {
+	m := map[Side]int{}
+	for x := 0; x < 8; x++ {
+		for y := 0; y < 8; y++ {
+			c := g.Board[x][y]
+			m[c]++
+		}
+	}
+
+	if m[Black] > m[White] {
+		return Black
+	} else if m[Black] < m[White] {
+		return White
+	}
+
+	return Blank
+}
+
+func (g *Game) nextSide() Side {
 	if g.Status != GameStatusStarted {
 		return Blank
 	}
@@ -171,9 +199,9 @@ func (g *Game) nextPlayer() Side {
 	p1 := Side(p1c)
 
 	p2 := g.reverseOf(p1)
-	if len(g.getRooms(p2)) > 0 {
+	if len(g.getAccessibleCells(p2)) > 0 {
 		return p2
-	} else if len(g.getRooms(p1)) > 0 {
+	} else if len(g.getAccessibleCells(p1)) > 0 {
 		return p1
 	}
 

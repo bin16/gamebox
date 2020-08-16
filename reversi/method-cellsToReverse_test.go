@@ -13,9 +13,7 @@ func TestCellsToReverse(t *testing.T) {
 	c := Black
 	n := "f5"
 	x, y := g.indexOf(n)
-	if x != 5 || y != 4 {
-		t.Errorf("Failed to run g.indexOf(%s); got %d,%d; want %d,%d", n, x, y, 5, 3)
-	}
+	assertIndexOf(t, g)("f5", 5, 4)
 
 	cells := g.cellsToReserve(c, x, y)
 	if len(cells) != 1 {
@@ -23,8 +21,5 @@ func TestCellsToReverse(t *testing.T) {
 		t.Errorf("Failed to run g.cellsToReverse(%d, %d ,%d); got %v", c, x, y, cells)
 	}
 
-	if err := g.Play(p1, n); err != nil {
-		g.print()
-		t.Errorf("Failed to run g.Play(%s, %s); got error %v", p1, n, err)
-	}
+	mustPlay(t, g)(p1, n)
 }

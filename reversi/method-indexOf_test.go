@@ -22,9 +22,6 @@ func TestIndexOf(t *testing.T) {
 		r := indexes[i]
 		x := r[0]
 		y := r[1]
-		x1, y1 := g.indexOf(n)
-		if x != x1 || y != y1 {
-			t.Errorf("g.indexOf failed, %s -> %d,%d; want %d,%d", n, x1, y1, x, y)
-		}
+		assertIndexOf(t, g)(n, x, y)
 	}
 }

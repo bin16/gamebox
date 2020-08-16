@@ -27,13 +27,20 @@ func (g *Game) Play(playerID, cmd string) error {
 	}
 	g.Board[x][y] = c
 	g.History = append(g.History, [3]int{int(c), x, y})
+	if g.nextSide() == Blank {
+		g.Status = GameStatusEnded
+	}
 
 	return nil
 }
 
+func (g *Game) End() (bool, Side) {
+	return g.Status == GameStatusEnded, g.winnerSide()
+}
+
 // checkNext check if a side could be played
 func (g *Game) checkNext(c Side, x, y int) error {
-	n := g.nextPlayer()
+	n := g.nextSide()
 	if n == Blank {
 		return g.errorOf(ErrorGameEnded)
 	}

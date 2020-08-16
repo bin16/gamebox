@@ -7,6 +7,12 @@ func (g *Game) Join(playerID string) error {
 		return g.errorOf(ErrorGameNotOpen)
 	}
 
+	for _, p := range g.Players {
+		if p == playerID {
+			return g.errorOf(ErrorPlayerAlreadyIn)
+		}
+	}
+
 	g.Players = append(g.Players, playerID)
 	if len(g.Players) == 2 {
 		g.Status = GameStatusStarted
@@ -42,31 +48,28 @@ func (g *Game) sideOfPlayer(playerID string) Side {
 	return Blank
 }
 
-// TODO: add dict
-func (g *Game) InfoOfPlayer(playerID string) map[string]interface{} {
+func (g *Game) Data(playerID string) map[string]interface{} {
+	data := map[string]interface{}{
+		"id":     g.ID,
+		"status": g.Status,
+		"board":  g.Board,
+		"next":   g.nextSide(),
+
+		"side":    Blank,
+		"cells":   [][2]int{},
+		"options": []string{},
+	}
 	if !g.playerInGame(playerID) {
-		return map[string]interface{}{
-			"id":     playerID,
-			"side":   Blank,
-			"open":   false,
-			"roomes": [][2]int{},
-		}
+		return data
 	}
 
 	c := g.sideOfPlayer(playerID)
-	if c != g.nextPlayer() {
-		return map[string]interface{}{
-			"id":    playerID,
-			"side":  int(c),
-			"open":  false,
-			"rooms": [][2]int{},
-		}
+	data["side"] = c
+	if c != g.nextSide() {
+		return data
 	}
 
-	return map[string]interface{}{
-		"id":    playerID,
-		"side":  int(c),
-		"open":  true,
-		"rooms": g.getRooms(c),
-	}
+	data["cells"] = g.getAccessibleCells(c)
+	data["options"] = g.getOptions(c)
+	return data
 }

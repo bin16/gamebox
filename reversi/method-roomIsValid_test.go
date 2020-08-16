@@ -75,7 +75,7 @@ func TestRoomIsValid(t *testing.T) {
 		t.Errorf("g.roomIsValid failed: %s", g.nameOf(x, y))
 	}
 
-	if l := g.getRooms(b); len(l) != 6 {
-		t.Errorf("g.getRooms failed: %v", l)
+	if l := g.getAccessibleCells(b); len(l) != 6 {
+		t.Errorf("g.getAccessibleCells failed: %v", l)
 	}
 }

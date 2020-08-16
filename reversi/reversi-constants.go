@@ -21,7 +21,8 @@ const (
 	GameStatusStarted
 	GameStatusEnded
 	// Error Codes
-	ErrorNotInGame ErrorCode = iota
+	ErrorPlayerAlreadyIn ErrorCode = iota
+	ErrorNotInGame
 	ErrorNotYourTurn
 	ErrorBadRequest
 	ErrorGameNotOpen
@@ -35,18 +36,19 @@ type DictEntry map[interface{}]string
 // Dict return translations of constants
 func (g *Game) Dict() DictEntry {
 	return DictEntry{
-		Blank:             "blank",
-		Black:             "black",
-		White:             "white",
-		GameStatusOpen:    "open",
-		GameStatusReady:   "ready",
-		GameStatusStarted: "started",
-		GameStatusEnded:   "ended",
-		ErrorNotInGame:    "You are not in game",
-		ErrorNotYourTurn:  "It's not your turn",
-		ErrorBadRequest:   "Bad Request",
-		ErrorGameNotOpen:  "Failed to join game, it is not open",
-		ErrorGameIsFull:   "Failed to join game, it is full",
-		ErrorGameEnded:    "Game ended",
+		Blank:                "blank",
+		Black:                "black",
+		White:                "white",
+		GameStatusOpen:       "open",
+		GameStatusReady:      "ready",
+		GameStatusStarted:    "started",
+		GameStatusEnded:      "ended",
+		ErrorPlayerAlreadyIn: "Player already in",
+		ErrorNotInGame:       "You are not in game",
+		ErrorNotYourTurn:     "It's not your turn",
+		ErrorBadRequest:      "Bad Request",
+		ErrorGameNotOpen:     "Failed to join game, it is not open",
+		ErrorGameIsFull:      "Failed to join game, it is full",
+		ErrorGameEnded:       "Game ended",
 	}
 }
