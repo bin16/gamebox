@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reversi</title>
+</head>
+<body>
+  <button onclick="req.createGame()">Create Game</button>
+  <script>
+    const req = {
+      login(username) {
+        document.cookie = `_u_=${username}; SameSite=strict; expires=9999999999`;
+      },
+      async createGame() {
+        const resp = await fetch('/reversi.create', {
+          method: 'POST'
+        })
+        if (resp.status !== 201) {
+          console.error('ERROR', resp.statusText)
+        }
+        const res = await resp.json()
+        console.log(res.game.id);
+        if (res && res.ok && res.game) {
+          const url = `/reversi/${ res.game.id }`;
+          document.location.href = url;
+        }
+      }
+    }
+  </script>
+</body>
+</html>

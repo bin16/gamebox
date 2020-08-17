@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reversi</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    .game-wrapper {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .game-board {
+      display: grid;
+      width: 50vmin;
+      height: 50vmin;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(8, 1fr);
+      gap: .5rem;
+      padding: .5rem;
+      border: 1px solid #666666;
+      background-color: #eeeeee;
+    }
+    .board-cell {
+      border: 1px solid #666666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .board-cell--white {
+      border-radius: 100%;
+      background-color: #ffffff;
+    }
+    .board-cell--black {
+      border-radius: 100%;
+      background-color: #333333;
+      border-color: #000000;
+    }
+    .board-cell--active {
+      cursor: pointer;
+      outline: 3px solid lightgreen;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: ;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="app-header"></header>
+    <main class="game-wrapper">
+      <div class="game-board" id="game_board">
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+        <button class="board-cell"></button>
+      </div>
+    </main>
+    <aside class="app-info">
+      <div id="p-0">Loading...</div>
+      <div id="p-1">Loading...</div>
+      <div id="score"></div>
+    </aside>
+  </div>
+
+  <script>
+    (function () {
+      const helper = {
+        gameId() {
+          return document.location.pathname.match(/reversi\/([a-z0-9\-]+)\/?$/i)[1];
+        },
+        cellName(x, y) {
+          const c = String.fromCharCode('a'.charCodeAt(0) + x);
+          const r = y + 1;
+          return c + '' + r;
+        },
+        sideKey(side) {
+          const list = ['blank', 'black', 'white'];
+          return list[side];
+        },
+        sideName(side) {
+          const list = ['', '黑棋', '白棋'];
+          return list[side];
+        },
+      };
+      const game = {
+        data: {},
+        player: {},
+        login(username) {
+          document.cookie = `_u_=${username}; SameSite=strict; Max-Age=9999999999; path=/`;
+        },
+        async join() {
+          const id = helper.gameId();
+          const resp = await fetch(`/reversi/${id}/game.join`, {
+            method: 'POST',
+          });
+          if (resp.status !== 200) {
+            console.error('ERROR', resp.statusText)
+          }
+          const res = await resp.json();
+        },
+        async stat(id = helper.gameId()) {
+          const resp = await fetch(`/reversi/${id}/game.stat`, {
+            method: 'POST',
+          });
+          if (resp.status !== 200) {
+            console.error('ERROR', resp.statusText)
+          }
+          const res = await resp.json()
+          if (res && res.ok && res.data) {
+            const data = res.data;
+            this.data = data;
+            const cells = document.querySelectorAll('.board-cell');
+            for (let x = 0; x < 8; x++) {
+              for (let y = 0; y < 8; y++) {
+                const side = data.board[x][y];
+                const sideName = helper.sideKey(side);
+                const index = y * 8 + x;
+                const $cell = cells[index];
+                $cell.classList.remove(
+                  'board-cell--active',
+                  'board-cell--white',
+                  'board-cell--black',
+                );
+                $cell.classList.add('board-cell--' + sideName);
+                $cell.setAttribute('disabled', true);
+              }
+            }
+            const aCells = data?.cells || [];
+            aCells.forEach(([x, y]) => {
+              const index = y * 8 + x;
+              const $cell = cells[index]
+              $cell.classList.add('board-cell--active');
+              $cell.title = helper.cellName(x, y);
+              $cell.dataset.value = helper.cellName(x, y);
+              $cell.setAttribute('onclick', `window.play('${helper.cellName(x, y)}')`);
+              $cell.removeAttribute('disabled');
+            });
+          }
+        },
+        async play(name) {
+          if (this.data.options.indexOf(name) <= 0) {
+            return;
+          }
+          const id = await helper.gameId();
+          const resp = await fetch(`/reversi/${id}/game.play/${name}`, {
+            method: 'POST',
+          });
+          await this.stat();
+        },
+        async createGame() {
+          const resp = await fetch('/reversi.create', {
+            method: 'POST'
+          });
+          if (resp.status !== 201) {
+            console.error('ERROR', resp.statusText)
+          }
+          const res = await resp.json()
+          if (res && res.ok) {
+            const url = `/reversi/${ res.id }`;
+            console.log(url);
+          }
+        }
+      };
+
+      game.t = setInterval(() => game.stat(), 500);
+      window.play = game.play.bind(game);
+      window.join = game.join.bind(game);
+    })();
+  </script>
+</body>
+</html>
