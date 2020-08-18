@@ -1,7 +1,10 @@
 package reversic
 
 import (
+	"io"
 	"net/http"
+
+	"github.com/bin16/Reversi/eventutil"
 
 	"github.com/bin16/Reversi/storeutil"
 
@@ -43,8 +46,18 @@ func CreateGame(c *gin.Context) {
 	})
 }
 
-func SubGame(c *gin.Context) {
-	// TODO: SSEvent
+// GET /reversi/:id/game.events/
+func GameEvents(c *gin.Context) {
+	id := c.Param("id")
+	sid, _ := c.Cookie("_sid")
+	ch := eventutil.Subscribe(id, sid)
+	c.Stream(func(w io.Writer) bool {
+		select {
+		case m := <-ch:
+			c.SSEvent("event", m)
+		}
+		return true
+	})
 }
 
 // StatGame POST /:id/game.stat
@@ -98,6 +111,7 @@ func JoinGame(c *gin.Context) {
 		})
 	}
 	storeutil.Set(g.ID, g.Save())
+	eventutil.Post(id, "join")
 
 	c.JSON(http.StatusOK, gin.H{"ok": 1})
 }
@@ -131,6 +145,7 @@ func PlayGame(c *gin.Context) {
 		return
 	}
 	storeutil.Set(g.ID, g.Save())
+	eventutil.Post(id, "play")
 
 	c.JSON(http.StatusAccepted, gin.H{
 		"ok": 1,

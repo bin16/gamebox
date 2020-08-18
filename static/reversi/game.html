@@ -247,6 +247,10 @@
           this.getData();
         },
       });
+      const eventSource = new EventSource(document.location.pathname + '/game.events');
+      eventSource.addEventListener('event', function(e) {
+        game.getData();
+      });
     })();
   </script>
 </body>
