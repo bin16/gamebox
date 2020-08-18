@@ -60,6 +60,8 @@ func (g *Game) Data(playerID string) map[string]interface{} {
 		"options": []string{},
 		"names":   g.Players,
 		"scores":  g.scoreOf(),
+		"history": g.History,
+		"raw":     g,
 	}
 	if !g.playerInGame(playerID) {
 		return data

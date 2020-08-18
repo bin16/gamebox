@@ -215,7 +215,16 @@
             if (this.status === 3) {
               return this.side === 0 ? 'You can join' : 'Waiting for another player';
             } else if (this.status === 5) {
-              return this.side === this.next ? 'Your Turn' : 'Opponent\'s Turn';
+              return this.side === this.next ? '⏰ Your Turn' : '⏳ Opponent\'s Turn';
+            } else if (this.status === 6) {
+              const [s0, s1] = this.scores;
+              if (s0 == s1) {
+                return 'Draw 👏';
+              } else if (s0 > s1 && this.side === 1 || s0 < s1 && this.side === 2) {
+                return 'You won! 🎉';
+              } else {
+                return 'Opponent Won!';
+              }
             }
 
             return 'Game ended';
