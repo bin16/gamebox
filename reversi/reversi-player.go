@@ -58,6 +58,8 @@ func (g *Game) Data(playerID string) map[string]interface{} {
 		"side":    Blank,
 		"cells":   [][2]int{},
 		"options": []string{},
+		"names":   g.Players,
+		"scores":  g.scoreOf(),
 	}
 	if !g.playerInGame(playerID) {
 		return data

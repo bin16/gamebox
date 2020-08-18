@@ -7,24 +7,72 @@
   <style>
     body {
       margin: 0;
+      height: 95vh;
       overflow: hidden;
-    }
-    .game-wrapper {
-      width: 100vw;
-      height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
     }
+    .game-wrapper {
+      display: inline-block;
+      margin: 1rem auto;
+      border: 2px solid #666666;
+      background-color: #ffffff;
+    }
+    .game-status::before {
+      content: '[';
+    }
+    .game-status::after {
+      content: ']';
+    }
+    .game {
+      margin: 1rem;
+      display: grid;
+      grid-template-rows: 40px 1fr 40px;
+      gap: 1rem;
+    }
+    .game-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #666666;
+      background-color: #eeeeee;
+    }
+    .player-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      text-align: center;
+    }
+    .player-list-item {
+      display: grid;
+      grid-template-columns: 1fr 48px;
+      border: 2px solid #666666;
+      background-color: #eeeeee;
+    }
+    .player-name {
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      font-size: .85rem;
+      line-height: 1.5;
+    }
+    .player-score {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-family: monospace;
+    }
     .game-board {
       display: grid;
-      width: 50vmin;
-      height: 50vmin;
+      width: 60vmin;
+      height: 60vmin;
       grid-template-columns: repeat(8, 1fr);
       grid-template-rows: repeat(8, 1fr);
       gap: .5rem;
       padding: .5rem;
-      border: 1px solid #666666;
+      border: 2px solid #666666;
       background-color: #eeeeee;
     }
     .board-cell {
@@ -36,185 +84,78 @@
     .board-cell--white {
       border-radius: 100%;
       background-color: #ffffff;
+      border-width: 2px;
     }
     .board-cell--black {
       border-radius: 100%;
       background-color: #333333;
       border-color: #000000;
+      border-width: 2px;
     }
     .board-cell--active {
       cursor: pointer;
       outline: 3px solid lightgreen;
     }
-
-    .app {
-      display: grid;
-      grid-template-columns: ;
-    }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js"
+    integrity="sha512-QJsj3afWlCpnQ60XzzYE8Jb3IgHIK1BcGZox9rUSmRRq3Ocz9vQ1yR80eX2/b9jfx/UuT5zYWNdrM8Te/eCMhQ=="
+    crossorigin="anonymous"></script>
 </head>
 <body>
-  <div class="app">
-    <header class="app-header"></header>
-    <main class="game-wrapper">
+  <div class="game-wrapper">
+    <main class="game" id="reversi">
+
+      <div class="game-header">
+        REVERSI&nbsp;<span class="game-status" id="game-status">{{statusText}}</span>
+        &nbsp;<a v-show="status===3&&side===0"
+          href="javascript:;"
+          @click="join()">Join</a>
+      </div>
       <div class="game-board" id="game_board">
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
-        <button class="board-cell"></button>
+        <button class="board-cell"
+          :class="cell.class"
+          :data-name="cell.name"
+          :data-x="cell.x"
+          :data-y="cell.y"
+          :disabled="!cell.ok"
+          @click="play(cell.name)"
+          v-for="cell in boardCells"></button>
+      </div>
+      <div class="player-list">
+        <div class="player-list-item" id="player-black">
+          <span class="player-name" id="player-black-name">{{ side == 1 ? 'You' : names[0] }}</span>
+          <span class="player-score" id="player-black-score">{{ scores[0] || '--' }}</span>
+        </div>
+        <div class="player-list-item" id="player-white">
+          <span class="player-name" id="player-white-name">{{ side == 2 ? 'You' : names[1] }}</span>
+          <span class="player-score" id="player-white-score">{{ scores[1] || '--' }}</span>
+        </div>
       </div>
     </main>
-    <aside class="app-info">
-      <div id="p-0">Loading...</div>
-      <div id="p-1">Loading...</div>
-      <div id="score"></div>
-    </aside>
   </div>
-
   <script>
-    (function () {
-      const helper = {
-        gameId() {
-          return document.location.pathname.match(/reversi\/([a-z0-9\-]+)\/?$/i)[1];
-        },
-        cellName(x, y) {
-          const c = String.fromCharCode('a'.charCodeAt(0) + x);
-          const r = y + 1;
-          return c + '' + r;
-        },
-        sideKey(side) {
-          const list = ['blank', 'black', 'white'];
-          return list[side];
-        },
-        sideName(side) {
-          const list = ['', '黑棋', '白棋'];
-          return list[side];
-        },
-      };
-      const game = {
-        data: {},
-        player: {},
-        login(username) {
-          document.cookie = `_u_=${username}; SameSite=strict; Max-Age=9999999999; path=/`;
-        },
-        async join() {
-          const id = helper.gameId();
-          const resp = await fetch(`/reversi/${id}/game.join`, {
-            method: 'POST',
-          });
+    (function() {
+      const req = {
+        async join(id) {
+          const resp = await fetch(`/reversi/${id}/game.join`, { method: 'POST', });
           if (resp.status !== 200) {
             console.error('ERROR', resp.statusText)
           }
-          const res = await resp.json();
+          return await resp.json();
         },
         async stat(id = helper.gameId()) {
-          const resp = await fetch(`/reversi/${id}/game.stat`, {
-            method: 'POST',
-          });
+          const resp = await fetch(`/reversi/${id}/game.stat`, { method: 'POST', });
           if (resp.status !== 200) {
             console.error('ERROR', resp.statusText)
           }
           const res = await resp.json()
-          if (res && res.ok && res.data) {
-            const data = res.data;
-            this.data = data;
-            const cells = document.querySelectorAll('.board-cell');
-            for (let x = 0; x < 8; x++) {
-              for (let y = 0; y < 8; y++) {
-                const side = data.board[x][y];
-                const sideName = helper.sideKey(side);
-                const index = y * 8 + x;
-                const $cell = cells[index];
-                $cell.classList.remove(
-                  'board-cell--active',
-                  'board-cell--white',
-                  'board-cell--black',
-                );
-                $cell.classList.add('board-cell--' + sideName);
-                $cell.setAttribute('disabled', true);
-              }
-            }
-            const aCells = data?.cells || [];
-            aCells.forEach(([x, y]) => {
-              const index = y * 8 + x;
-              const $cell = cells[index]
-              $cell.classList.add('board-cell--active');
-              $cell.title = helper.cellName(x, y);
-              $cell.dataset.value = helper.cellName(x, y);
-              $cell.setAttribute('onclick', `window.play('${helper.cellName(x, y)}')`);
-              $cell.removeAttribute('disabled');
-            });
-          }
+          return res.data;
         },
-        async play(name) {
-          if (this.data.options.indexOf(name) <= 0) {
-            return;
-          }
-          const id = await helper.gameId();
+        async play(id, name) {
           const resp = await fetch(`/reversi/${id}/game.play/${name}`, {
             method: 'POST',
           });
-          await this.stat();
+          return resp;
         },
         async createGame() {
           const resp = await fetch('/reversi.create', {
@@ -231,9 +172,81 @@
         }
       };
 
-      game.t = setInterval(() => game.stat(), 500);
-      window.play = game.play.bind(game);
-      window.join = game.join.bind(game);
+      const game = new Vue({
+        el: '#reversi',
+        data: {
+          board: [],
+          cells: [],
+          options: [],
+          names: ['Player 1', 'Player 2'],
+          scores: [0, 0, 0],
+          status: -1,
+          next: 0,
+          side: 0,
+        },
+        methods: {
+          gameId() { return document.location.pathname.match(/reversi\/([a-z0-9\-]+)\/?$/i)[1]; },
+          sideKey: side => ['blank', 'black', 'white'][side],
+          cellName: (x, y) => ['abcdefgh'[x], (y+1)].join(''),
+          statusName: status => ['可以加入', '就绪', '进行中', '已结束'][status-3],
+          async getData() {
+            const data = await req.stat(this.gameId());
+            this.board = data.board;
+            this.cells = data.cells;
+            this.options = data.options;
+            this.status = data.status;
+            this.side = data.side;
+            this.next = data.next;
+            this.scores = data.scores;
+            this.names = data.names;
+            document.title = this.statusText;
+          },
+          async play(name) {
+            await req.play(this.gameId(), name);
+            this.getData();
+          },
+          async join() {
+            await req.join(this.gameId());
+            this.getData();
+          },
+        },
+        computed: {
+          statusText() {
+            if (this.status === 3) {
+              return this.side === 0 ? 'You can join' : 'Waiting for another player';
+            } else if (this.status === 5) {
+              return this.side === this.next ? 'Your Turn' : 'Opponent\'s Turn';
+            }
+
+            return 'Game ended';
+          },
+          boardCells() {
+            if (this.board.length != 8) {
+              return [];
+            }
+            const items = [];
+            for (let y = 0; y < 8; y++) {
+              for (let x = 0; x < 8; x++) {
+                const side = this.board[x][y];
+                const name = this.cellName(x, y);
+                const key = this.sideKey(side);
+                const ok = this.options.indexOf(name) >= 0;
+                items.push({
+                  x, y, name, ok,
+                  class: {
+                    ['board-cell--'+key]: true,
+                    'board-cell--active': ok,
+                  },
+                });
+              }
+            }
+            return items;
+          },
+        },
+        created() {
+          this.getData();
+        },
+      });
     })();
   </script>
 </body>
