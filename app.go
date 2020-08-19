@@ -14,7 +14,6 @@ func main() {
 	app.GET("/_debug", func(c *gin.Context) {
 		c.String(http.StatusOK, "username="+userc.Username(c))
 	})
-	app.POST("/user.login", userc.UserLogin)
 	app.POST("/reversi.create", reversic.CreateGame)
 
 	gr := app.Group("/reversi")
