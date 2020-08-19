@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/bin16/Reversi/eventutil"
@@ -11,6 +12,18 @@ import (
 
 func main() {
 	app := gin.Default()
+	app.GET("/", func(c *gin.Context) {
+		name := userc.Username(c)
+		nameOverride := c.Query("name")
+		for _, n := range []string{nameOverride, name, "New Player"} {
+			if n != "" {
+				c.SetSameSite(http.SameSiteLaxMode)
+				c.SetCookie("_u_", n, 99999999, "/", "", false, false)
+				c.String(http.StatusOK, fmt.Sprintf("Ok, %s", n))
+				return
+			}
+		}
+	})
 	app.GET("/_debug", func(c *gin.Context) {
 		c.String(http.StatusOK, "username="+userc.Username(c))
 	})
