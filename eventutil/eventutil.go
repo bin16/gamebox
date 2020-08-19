@@ -22,6 +22,11 @@ type Session struct {
 	messageChannel chan interface{}
 }
 
+// OnMessage return message channel
+func (s *Session) OnMessage() chan interface{} {
+	return s.messageChannel
+}
+
 // Subscribe with Namespace and sessionID
 func Subscribe(name string, sid string) *Session {
 	log.Println("📢 Subscribe", name, "/", sid)

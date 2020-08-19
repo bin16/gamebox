@@ -4,24 +4,13 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/bin16/Reversi/eventutil"
-
-	"github.com/bin16/Reversi/storeutil"
-
-	"github.com/bin16/Reversi/reversi"
-	"github.com/bin16/Reversi/userc"
 	"github.com/gin-gonic/gin"
-)
+	"github.com/google/uuid"
 
-// Game Events
-const (
-	EventGameStart   = "game_start"
-	EventGameEnd     = "game_end"
-	EventPlayerJoin  = "player_join"  // username, side
-	EventPlayerLeave = "player_leave" // username, side
-	EventPlayerPlay  = "player_play"  // username, side, cell
-	EventPlayerTurn  = "player_turn"  // username, side
-	EventPlayerWin   = "player_win"   // username, side
+	"github.com/bin16/Reversi/eventutil"
+	"github.com/bin16/Reversi/reversi"
+	"github.com/bin16/Reversi/storeutil"
+	"github.com/bin16/Reversi/userc"
 )
 
 // Index GET /
@@ -31,6 +20,15 @@ func Index(c *gin.Context) {
 
 // Game GET /:id
 func Game(c *gin.Context) {
+	id := c.Param("id")
+	uid, _ := uuid.NewRandom()
+	if sid, err := c.Cookie("_sid"); err != nil {
+		c.SetSameSite(http.SameSiteLaxMode)
+		c.SetCookie("_sid", uid.String(), 999999999, "/", "", false, true)
+	} else {
+		eventutil.UnSubscribe(id, sid)
+	}
+
 	c.File("static/reversi/game.html")
 }
 
@@ -46,17 +44,19 @@ func CreateGame(c *gin.Context) {
 	})
 }
 
-// GET /reversi/:id/game.events/
+// GameEvents GET /reversi/:id/game.events/ Server-Sent Events
 func GameEvents(c *gin.Context) {
 	id := c.Param("id")
 	sid, _ := c.Cookie("_sid")
-	ch := eventutil.Subscribe(id, sid)
+	sub := eventutil.Subscribe(id, sid)
 	c.Stream(func(w io.Writer) bool {
 		select {
-		case m := <-ch:
-			c.SSEvent("event", m)
+		case msg, more := <-sub.OnMessage():
+			if more && msg != nil {
+				c.SSEvent("event", msg)
+			}
+			return more
 		}
-		return true
 	})
 }
 
