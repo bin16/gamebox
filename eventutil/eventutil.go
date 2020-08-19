@@ -1,7 +1,7 @@
 package eventutil
 
 import (
-	"fmt"
+	"log"
 	"sync"
 )
 
@@ -10,66 +10,76 @@ import (
 var namespaces = map[string]*Namespace{}
 var rw = sync.RWMutex{}
 
-type Session struct {
-	ID string
-	Ch chan interface{}
-}
-
+// Namespace for Subscription
 type Namespace struct {
 	Name     string
-	Sessions []Session
+	Sessions map[string]Session
 }
 
-func (ns *Namespace) getSession(sid string) Session {
-	for _, s := range ns.Sessions {
-		if s.ID == sid {
-			return s
-		}
-	}
-
-	return Session{}
+// Session for Subscription
+type Session struct {
+	ID             string
+	messageChannel chan interface{}
 }
 
-func (ns *Namespace) containsSessionID(sid string) bool {
-	for _, s := range ns.Sessions {
-		if s.ID == sid {
-			return true
-		}
-	}
-
-	return false
-}
-
-func Subscribe(name string, sid string) chan interface{} {
+// Subscribe with Namespace and sessionID
+func Subscribe(name string, sid string) *Session {
+	log.Println("📢 Subscribe", name, "/", sid)
 	rw.Lock()
 	defer rw.Unlock()
-	if namespaces[name] == nil {
-		namespaces[name] = &Namespace{Name: name}
+	s1 := Session{
+		ID:             sid,
+		messageChannel: make(chan interface{}, 5),
 	}
-	ns := namespaces[name]
-	if !ns.containsSessionID(sid) {
-		ns.Sessions = append(ns.Sessions, Session{
-			ID: sid,
-			Ch: make(chan interface{}, 5),
-		})
+	if ns, ok := namespaces[name]; ok {
+		if s, ok := ns.Sessions[sid]; ok {
+			close(s.messageChannel)
+			delete(ns.Sessions, sid)
+
+			return &s
+		}
+		ns.Sessions[sid] = s1
+		return &s1
 	}
 
-	s := ns.getSession(sid)
+	namespaces[name] = &Namespace{
+		Name: name,
+		Sessions: map[string]Session{
+			sid: s1,
+		},
+	}
 
-	fmt.Println("Subscribe", name, "/", sid)
-
-	return s.Ch
+	return &s1
 }
 
+// Post message into a NameSpace
 func Post(name string, message interface{}) {
 	rw.RLock()
 	defer rw.RUnlock()
-	if namespaces[name] == nil {
-		return
+	log.Println("🚀 POST", name)
+	if ns, ok := namespaces[name]; ok {
+		for _, s := range ns.Sessions {
+			ch := s.messageChannel
+			go func() {
+				ch <- message
+			}()
+		}
 	}
-	ns := namespaces[name]
-	for _, s := range ns.Sessions {
-		fmt.Println("POST to", name, "/", s.ID)
-		s.Ch <- message
+
+}
+
+// UnSubscribe clear things
+func UnSubscribe(name, sid string) {
+	rw.Lock()
+	defer rw.Unlock()
+	log.Println("🦖 UnSubscribe", name, "/", sid)
+	if ns, ok := namespaces[name]; ok {
+		if s, ok := ns.Sessions[sid]; ok {
+			close(s.messageChannel)
+			delete(ns.Sessions, sid)
+			if len(ns.Sessions) == 0 {
+				delete(namespaces, name)
+			}
+		}
 	}
 }
