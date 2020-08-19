@@ -79,10 +79,12 @@
       background-color: #eeeeee;
     }
     .board-cell {
+      box-sizing: border-box;
       border: 1px solid #666666;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: .5s ease all;
     }
     .board-cell--white {
       border-radius: 100%;
@@ -94,6 +96,7 @@
       background-color: #333333;
       border-color: #000000;
       border-width: 2px;
+      transform: rotateY(180deg);
     }
     .board-cell--active {
       cursor: pointer;
@@ -222,7 +225,7 @@
           },
           async play(name) {
             await req.play(this.gameId(), name);
-            this.getData();
+            // this.getData();
           },
           async join() {
             await req.join(this.gameId());
@@ -271,14 +274,22 @@
             return items;
           },
         },
-        created() {
-          this.getData();
+        async created() {
+          await this.getData();
+          if (this.status != 6) {
+            const eventSource = new EventSource(document.location.pathname + '/game.events');
+            eventSource.addEventListener('event', e => {
+              this.getData();
+            });
+            eventSource.onerror = err => console.warn('EventSource ERROR', err);
+            window.addEventListener('beforeunload', () => {
+              eventSource.close();
+            });
+            this.eventSource = eventSource;
+          }
         },
       });
-      const eventSource = new EventSource(document.location.pathname + '/game.events');
-      eventSource.addEventListener('event', function(e) {
-        game.getData();
-      });
+
     })();
   </script>
 </body>
