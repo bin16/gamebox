@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reversi</title>
   <style>
+    :root {
+      --gap: 1rem;
+    }
     body {
       margin: 0;
       height: 95vh;
@@ -15,7 +18,6 @@
     }
     .game-wrapper {
       display: inline-block;
-      margin: 1rem auto;
       border: 2px solid #666666;
       background-color: #ffffff;
     }
@@ -26,10 +28,10 @@
       content: ']';
     }
     .game {
-      margin: 1rem;
+      margin: var(--gap);
       display: grid;
       grid-template-rows: 40px 1fr 40px;
-      gap: 1rem;
+      gap: var(--gap);
     }
     .game-header {
       display: flex;
@@ -41,7 +43,7 @@
     .player-list {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+      gap: var(--gap);
       text-align: center;
     }
     .player-list-item {
@@ -65,6 +67,7 @@
       font-family: monospace;
     }
     .game-board {
+      box-sizing: border-box;
       display: grid;
       width: 60vmin;
       height: 60vmin;
@@ -95,6 +98,22 @@
     .board-cell--active {
       cursor: pointer;
       outline: 3px solid lightgreen;
+    }
+    @media (max-width: 750px) {
+      :root {
+        --gap: .5rem;
+      }
+      body {
+        align-items: flex-start;
+        overflow-x: hidden;
+      }
+      .game-wrapper {
+        border: none;
+      }
+      .game-board {
+        width: calc(100vmin - 1rem);
+        height: calc(100vmin - 1rem);
+      }
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js"
