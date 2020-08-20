@@ -1,4 +1,4 @@
-module github.com/bin16/Reversi
+module github.com/bin16/gamebox
 
 go 1.14
 

@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"github.com/bin16/Reversi/eventutil"
-	"github.com/bin16/Reversi/reversi"
-	"github.com/bin16/Reversi/storeutil"
-	"github.com/bin16/Reversi/userc"
+	"github.com/bin16/gamebox/eventutil"
+	"github.com/bin16/gamebox/reversi"
+	"github.com/bin16/gamebox/storeutil"
+	"github.com/bin16/gamebox/userc"
 )
 
 // Index GET /

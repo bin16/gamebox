@@ -3,7 +3,7 @@ package storeutil
 import (
 	"testing"
 
-	"github.com/bin16/Reversi/reversi"
+	"github.com/bin16/gamebox/reversi"
 )
 
 func TestSet(t *testing.T) {

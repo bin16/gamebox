@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/bin16/Reversi/eventutil"
-	"github.com/bin16/Reversi/reversic"
-	"github.com/bin16/Reversi/userc"
+	"github.com/bin16/gamebox/eventutil"
+	"github.com/bin16/gamebox/reversic"
+	"github.com/bin16/gamebox/userc"
 	"github.com/gin-gonic/gin"
 )
 
