@@ -17,8 +17,7 @@ func main() {
 		nameOverride := c.Query("name")
 		for _, n := range []string{nameOverride, name, "New Player"} {
 			if n != "" {
-				c.SetSameSite(http.SameSiteLaxMode)
-				c.SetCookie("_u_", n, 99999999, "/", "", false, false)
+				userc.SetUsername(c, n)
 				c.String(http.StatusOK, fmt.Sprintf("Ok, %s", n))
 				return
 			}
