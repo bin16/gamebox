@@ -282,6 +282,7 @@
               this.getData();
             });
             eventSource.onerror = err => console.warn('EventSource ERROR', err);
+            eventSource.onopen = () => this.getData();
             window.addEventListener('beforeunload', () => {
               eventSource.close();
             });
