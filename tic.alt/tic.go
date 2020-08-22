@@ -77,11 +77,11 @@ func checkBoard(b board, p int) (status, side int) {
 	for _, d := range l {
 		line := pickLine(b, d[0], d[1])
 
-		if xOK, _ := checkLine(line, SideX, boardSize); xOK {
+		if xWin, _ := checkLine(line, SideX, boardSize); xWin {
 			return StatusEnd, SideX
 		}
 
-		if oOK, _ := checkLine(line, SideO, boardSize); oOK {
+		if oWin, _ := checkLine(line, SideO, boardSize); oWin {
 			return StatusEnd, SideO
 		}
 	}
@@ -99,29 +99,29 @@ func checkBoard(b board, p int) (status, side int) {
 	return StatusEnd, Blank
 }
 
-func checkLine(line []int, want int, more int) (bool, []int) {
-	if len(line) < more {
-		return false, []int{}
+func checkLine(lineOfSides []int, expectedSide int, more int) (found bool, index [2]int) {
+	if len(lineOfSides) < more {
+		return false, [2]int{0, 0}
 	}
 
 	var l, r int
-	for i := 0; i < len(line); i++ {
-		if line[i] != want {
+	for i := 0; i < len(lineOfSides); i++ {
+		if lineOfSides[i] != expectedSide {
 			if r-l >= more {
-				return true, line[l:r]
+				return true, [2]int{l, r}
 			}
 
 			l = i + 1
 			r = l
 		} else {
 			r++
-			if r == len(line) && r-l >= more {
-				return true, line[l:r]
+			if r == len(lineOfSides) && r-l >= more {
+				return true, [2]int{l, r}
 			}
 		}
 	}
 
-	return false, []int{}
+	return false, [2]int{0, 0}
 }
 
 func pickLine(b board, n0, d int) []int {
