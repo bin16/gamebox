@@ -4,6 +4,54 @@ import (
 	"testing"
 )
 
+func TestPickLine(t *testing.T) {
+	// O _ O
+	// _ X _
+	// _ _ X
+	var b board = [boardSize * boardSize]int{
+		SideO, Blank, SideO, Blank, SideX, Blank, Blank, Blank, SideX,
+	}
+	tPickLine(t, b, 0, bottom)([]int{SideO, Blank, Blank})
+	tPickLine(t, b, 1, bottom)([]int{Blank, SideX, Blank})
+	tPickLine(t, b, 2, bottom)([]int{SideO, Blank, SideX})
+
+	tPickLine(t, b, 0, bottomRight)([]int{SideO, SideX, SideX})
+	tPickLine(t, b, 0+bottomRight, bottomRight)([]int{SideX, SideX})
+	tPickLine(t, b, 0+bottomRight*2, bottomRight)([]int{SideX})
+	tPickLine(t, b, 0+right, bottomRight)([]int{Blank, Blank})
+	tPickLine(t, b, 0+right*2, bottomRight)([]int{SideO})
+	tPickLine(t, b, 0+bottom, bottomRight)([]int{Blank, Blank})
+	tPickLine(t, b, 0+bottom*2, bottomRight)([]int{Blank})
+
+	tPickLine(t, b, 2, bottomLeft)([]int{SideO, SideX, Blank})
+	tPickLine(t, b, 2+bottomLeft, bottomLeft)([]int{SideX, Blank})
+	tPickLine(t, b, 2+bottomLeft*2, bottomLeft)([]int{Blank})
+	tPickLine(t, b, 2-right, bottomLeft)([]int{Blank, Blank})
+	tPickLine(t, b, 2-right*2, bottomLeft)([]int{SideO})
+	tPickLine(t, b, 2+bottom, bottomLeft)([]int{Blank, Blank})
+	tPickLine(t, b, 2+bottom*2, bottomLeft)([]int{SideX})
+
+	tPickLine(t, b, 0, bottom)([]int{SideO, Blank, Blank})
+	tPickLine(t, b, 0+right, bottom)([]int{Blank, SideX, Blank})
+	tPickLine(t, b, 0+right*2, bottom)([]int{SideO, Blank, SideX})
+}
+
+func tPickLine(t *testing.T, b board, n0, d int) func(l0 []int) {
+	return func(l0 []int) {
+		t.Helper()
+		if l1 := pickLine(b, n0, d); len(l1) != len(l0) {
+			t.Errorf("Failed: pickLine(b, %d, %d), got %v, want %v", n0, d, l1, l0)
+		} else {
+			for i, c1 := range l1 {
+				if c1 != l0[i] {
+					t.Errorf("Failed: pickLine(b, %d, %d), got %v, want %v", n0, d, l1, l0)
+					return
+				}
+			}
+		}
+	}
+}
+
 func TestMethods(t *testing.T) {
 	// O _ O
 	// _ X _

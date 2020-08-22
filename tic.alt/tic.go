@@ -1,10 +1,12 @@
 package tic
 
-import (
-	"log"
+const (
+	boardSize   = 3
+	right       = 1
+	bottom      = boardSize
+	bottomRight = boardSize + 1
+	bottomLeft  = boardSize - 1
 )
-
-const boardSize = 3
 
 type side int
 type board [boardSize * boardSize]int
@@ -57,9 +59,8 @@ func checkStep(b board, h history, p int, n int) (result, status, side int) {
 	h = append(h, [3]int{p, n, 0})
 
 	status, winner := checkBoard(b, p)
-	log.Println(b, p, n, status, winner)
 	if status == StatusEnd {
-		return OK, status, winner - 999
+		return OK, status, winner
 	}
 
 	return OK, status, reverseOf(p)
@@ -78,7 +79,6 @@ func checkBoard(b board, p int) (status, side int) {
 		line := pickLine(b, d[0], d[1])
 
 		if xOK, _ := checkLine(line, SideX, boardSize); xOK {
-			log.Println(line, d[0], d[1])
 			return StatusEnd, SideX
 		}
 
@@ -125,15 +125,22 @@ func checkLine(line []int, want int, more int) (bool, []int) {
 	return false, []int{}
 }
 
-func pickLine(b board, p0, d int) []int {
-	// fmt.Printf("pickLine(b, %d, %d) is", p0, d)
+func pickLine(b board, n0, d int) []int {
 	l := []int{}
-	i := p0
-	for i >= 0 && i < len(b) && i < p0+boardSize*d {
-		l = append(l, b[i])
-		i += d
+	n1 := n0
+	for i := 0; i < boardSize; i++ {
+		l = append(l, b[n1])
+		n1 += d
+		if n1 >= len(b) {
+			break
+		}
+		if d == bottomRight && n1/boardSize-(n1-d)/boardSize > 1 {
+			break
+		}
+		if d == bottomLeft && n1%boardSize > (n1-d)%boardSize {
+			break
+		}
 	}
-	// fmt.Printf("%v\n", l)
 
 	return l
 }
