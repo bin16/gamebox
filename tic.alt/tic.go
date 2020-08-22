@@ -1,19 +1,17 @@
 package tic
 
-const (
-	boardSize   = 3
-	right       = 1
-	bottom      = boardSize
-	bottomRight = boardSize + 1
-	bottomLeft  = boardSize - 1
-)
-
 type side int
 type board [boardSize * boardSize]int
 type history [][3]int
 
 // Constants
 const (
+	boardSize   = 3
+	right       = 1
+	bottom      = boardSize
+	bottomRight = boardSize + 1
+	bottomLeft  = boardSize - 1
+
 	Blank = iota
 	SideX
 	SideO
@@ -31,8 +29,8 @@ const (
 	NotFreeCell
 )
 
-func reverseOf(s int) int {
-	if s == SideX {
+func reverseOf(side int) (otherSide int) {
+	if side == SideX {
 		return SideO
 	}
 
@@ -45,8 +43,7 @@ func nextSide(h history) int {
 	return reverseOf(sl)
 }
 
-// Result, Status, Side
-func checkStep(b board, h history, p int, n int) (result, status, side int) {
+func checkStep(b board, h history, p int, n int) (actionResult, gameStatus, nextOrWinnerSide int) {
 	if ns := nextSide(h); ns != p {
 		return NotYourTurn, StatusStarted, reverseOf(p)
 	}
@@ -69,10 +66,12 @@ func checkStep(b board, h history, p int, n int) (result, status, side int) {
 func checkBoard(b board, p int) (status, side int) {
 	l := [][2]int{}
 	for i := 0; i < boardSize; i++ {
-		l = append(l, [2]int{i * boardSize, 1})                   // r
-		l = append(l, [2]int{i * (boardSize + 1), boardSize + 1}) // br
-		l = append(l, [2]int{i * 1, 1})                           // b
-		l = append(l, [2]int{i * (boardSize - 1), boardSize - 1}) // bl
+		l = append(l, [2]int{i * bottom, right})                      // r-y
+		l = append(l, [2]int{i * right, bottomRight})                 // br-x
+		l = append(l, [2]int{i * bottom, bottomRight})                // br-y
+		l = append(l, [2]int{i * right, bottom})                      // b-x
+		l = append(l, [2]int{i * (boardSize - 1), bottomLeft})        // bl-x
+		l = append(l, [2]int{(boardSize - 1) + i*bottom, bottomLeft}) // bl-y
 	}
 
 	for _, d := range l {
