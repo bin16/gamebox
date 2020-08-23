@@ -43,24 +43,32 @@ func nextSide(h history) int {
 	return reverseOf(sl)
 }
 
-func checkStep(b board, h history, p int, n int) (actionResult, gameStatus, nextOrWinnerSide int) {
+func testStep(b board, h history, s int, p, n int) (actionResult int) {
+	if s != StatusStarted {
+		return NotStarted
+	}
+
 	if ns := nextSide(h); ns != p {
-		return NotYourTurn, StatusStarted, reverseOf(p)
+		return NotYourTurn
 	}
 
 	if c := b[n]; c != Blank {
-		return NotFreeCell, StatusStarted, p
+		return NotFreeCell
 	}
 
+	return OK
+}
+
+func commitStep(b board, h history, p, n int) (b1 board, h1 history, gameStatus, nextOrWinnerSide int) {
 	b[n] = p
 	h = append(h, [3]int{p, n, 0})
 
 	status, winner := checkBoard(b, p)
 	if status == StatusEnd {
-		return OK, status, winner
+		return b, h, status, winner
 	}
 
-	return OK, status, reverseOf(p)
+	return b, h, status, reverseOf(p)
 }
 
 func checkBoard(b board, p int) (status, side int) {

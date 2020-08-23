@@ -4,6 +4,48 @@ import (
 	"testing"
 )
 
+func TestMethodCommitStep(t *testing.T) {
+	// O _ O
+	// _ X _
+	// _ _ X
+	var b board = [boardSize * boardSize]int{
+		SideO, Blank, SideO, Blank, SideX, Blank, Blank, Blank, SideX,
+	}
+	var h history = [][3]int{
+		[3]int{SideX, 4, 0}, // X
+		[3]int{SideO, 2, 0}, // O
+		[3]int{SideX, 8, 0}, // X
+		[3]int{SideO, 0, 0}, // O
+	}
+	tCommitStep(t, b, h, SideX, 1)(StatusStarted, SideO)
+	tCommitStep(t, b, h, SideX, 3)(StatusStarted, SideO)
+	tCommitStep(t, b, h, SideX, 5)(StatusStarted, SideO)
+	tCommitStep(t, b, h, SideX, 6)(StatusStarted, SideO)
+	tCommitStep(t, b, h, SideX, 7)(StatusStarted, SideO)
+
+	tCommitStep(t, b, h, SideO, 1)(StatusEnd, SideO)
+	tCommitStep(t, b, h, SideX, 0)(StatusEnd, SideX)
+
+	// O _ O
+	// _ X _
+	// X _ X
+	b1, h1, _, _ := commitStep(b, h, SideX, 6)
+	tCommitStep(t, b1, h1, SideO, 1)(StatusEnd, SideO)
+	tCommitStep(t, b1, h1, SideO, 7)(StatusStarted, SideX)
+
+	tCommitStep(t, b1, h1, SideO, 1)(StatusEnd, SideO)
+	tCommitStep(t, b1, h1, SideX, 7)(StatusEnd, SideX)
+}
+
+func tCommitStep(t *testing.T, b board, h history, p, n int) func(s0, ns0 int) {
+	return func(s0, ns0 int) {
+		t.Helper()
+		if _, _, s1, ns1 := commitStep(b, h, p, n); s1 != s0 || ns1 != ns0 {
+			t.Errorf("Failed: commitStep(..., %d, %d), got (..., %d, %d), want (..., %d, %d)", p, n, s1, ns1, s0, ns0)
+		}
+	}
+}
+
 func TestPickLine(t *testing.T) {
 	// O _ O
 	// _ X _
@@ -52,7 +94,7 @@ func tPickLine(t *testing.T, b board, n0, d int) func(l0 []int) {
 	}
 }
 
-func TestMethods(t *testing.T) {
+func TestMethodTestStep(t *testing.T) {
 	// O _ O
 	// _ X _
 	// _ _ X
@@ -65,28 +107,32 @@ func TestMethods(t *testing.T) {
 		[3]int{SideX, 8, 0}, // X
 		[3]int{SideO, 0, 0}, // O
 	}
+	var s = StatusStarted
 
 	if nextSide(h) != SideX {
 		t.Errorf("nextSide(h) should be %d, got %d", SideX, nextSide(h))
 	}
 
-	checkIt(t, b, h, SideX, 7)(OK, StatusStarted, SideO)
-	checkIt(t, b, h, SideX, 6)(OK, StatusStarted, SideO)
-	checkIt(t, b, h, SideX, 5)(OK, StatusStarted, SideO)
-	checkIt(t, b, h, SideX, 4)(NotFreeCell, StatusStarted, SideX)
+	tTestStep(t, b, h, StatusOpen, SideX, 7)(NotStarted)
+	tTestStep(t, b, h, StatusDraw, SideX, 7)(NotStarted)
+	tTestStep(t, b, h, StatusEnd, SideX, 7)(NotStarted)
+	tTestStep(t, b, h, s, SideX, 7)(OK)
+	tTestStep(t, b, h, s, SideX, 6)(OK)
+	tTestStep(t, b, h, s, SideX, 5)(OK)
+	tTestStep(t, b, h, s, SideX, 4)(NotFreeCell)
 }
 
-func checkIt(t *testing.T, b board, h history, p, n int) func(r0, s0, n0 int) {
-	return func(r0, s0, n0 int) {
+func tTestStep(t *testing.T, b board, h history, s, p, n int) func(r0 int) {
+	return func(r0 int) {
 		t.Helper()
-		r1, s1, n1 := checkStep(b, h, p, n)
-		if r1 != r0 || s1 != s0 || n1 != n0 {
-			t.Errorf("Failed, checkStep(%v, h, %d, %d) got (%d, %d, %d); want (%d, %d, %d)", b, p, n, r1, s1, n1, r0, s0, n0)
+		r1 := testStep(b, h, s, p, n)
+		if r1 != r0 {
+			t.Errorf("Failed: testStep(%v, h, %d, %d, %d) got (%d); want (%d)", b, s, p, n, r1, r0)
 		}
 	}
 }
 
-func TestCheckBoard(t *testing.T) {
+func TestMethodCheckBoard(t *testing.T) {
 	var b board = [boardSize * boardSize]int{
 		SideO, Blank, SideO, Blank, SideX, Blank, Blank, Blank, SideX,
 	}
@@ -98,7 +144,7 @@ func TestCheckBoard(t *testing.T) {
 	}
 }
 
-func TestCheckLine(t *testing.T) {
+func TestMethodCheckLine(t *testing.T) {
 	noResult := [2]int{}
 	tCheckLine(t, []int{1, 2, 1, 2, 1, 2, 1}, 2, 3)(false, noResult)
 	tCheckLine(t, []int{2, 0, 0}, 2, 3)(false, noResult)
