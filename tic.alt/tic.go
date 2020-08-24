@@ -7,6 +7,7 @@ type history [][3]int
 // Constants
 const (
 	boardSize   = 3
+	lenOfWin    = 3
 	right       = 1
 	bottom      = boardSize
 	bottomRight = boardSize + 1
@@ -85,11 +86,11 @@ func checkBoard(b board, p int) (status, side int) {
 	for _, d := range l {
 		line := pickLine(b, d[0], d[1])
 
-		if xWin, _ := checkLine(line, SideX, boardSize); xWin {
+		if xWin, _ := checkLine(line, SideX, lenOfWin); xWin {
 			return StatusEnd, SideX
 		}
 
-		if oWin, _ := checkLine(line, SideO, boardSize); oWin {
+		if oWin, _ := checkLine(line, SideO, lenOfWin); oWin {
 			return StatusEnd, SideO
 		}
 	}

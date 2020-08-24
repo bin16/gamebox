@@ -146,18 +146,21 @@ func TestMethodCheckBoard(t *testing.T) {
 
 func TestMethodCheckLine(t *testing.T) {
 	noResult := [2]int{}
-	tCheckLine(t, []int{1, 2, 1, 2, 1, 2, 1}, 2, 3)(false, noResult)
-	tCheckLine(t, []int{2, 0, 0}, 2, 3)(false, noResult)
-	tCheckLine(t, []int{0, 2, 0}, 2, 3)(false, noResult)
-	tCheckLine(t, []int{1, 0, 1}, 2, 3)(false, noResult)
-	tCheckLine(t, []int{2, 2, 2}, 2, 3)(true, [2]int{0, 3})
-	tCheckLine(t, []int{1, 2, 2, 2, 1}, 2, 3)(true, [2]int{1, 4})
-	tCheckLine(t, []int{2, 0, 2, 0, 1, 0, 0, 0, 1}, 1, 3)(false, noResult)
-	tCheckLine(t, []int{2, 0, 2, 0, 1, 0, 0, 0, 1}, 2, 3)(false, noResult)
-	tCheckLine(t, []int{2, 0, 2, 0, 1, 0, 0, 0, 1}, 0, 3)(true, [2]int{5, 8})
-	tCheckLine(t, []int{2, 0}, 2, 3)(false, noResult)
-	tCheckLine(t, []int{2, 1}, 2, 3)(false, noResult)
-	tCheckLine(t, []int{1, 1}, 1, 3)(false, noResult)
+	tCheckLine(t, []int{1, 2, 1, 2, 1, 2, 1}, 2, lenOfWin)(false, noResult)
+	tCheckLine(t, []int{2, 0, 0}, 2, lenOfWin)(false, noResult)
+	tCheckLine(t, []int{0, 2, 0}, 2, lenOfWin)(false, noResult)
+	tCheckLine(t, []int{1, 0, 1}, 2, lenOfWin)(false, noResult)
+	tCheckLine(t, []int{2, 2, 2}, 2, lenOfWin)(true, [2]int{0, 3})
+	tCheckLine(t, []int{1, 2, 2, 2, 1}, 2, lenOfWin)(true, [2]int{1, 4})
+	tCheckLine(t, []int{2, 0, 2, 0, 1, 0, 0, 0, 1}, 1, lenOfWin)(false, noResult)
+	tCheckLine(t, []int{2, 0, 2, 0, 1, 0, 0, 0, 1}, 2, lenOfWin)(false, noResult)
+	tCheckLine(t, []int{2, 0, 2, 0, 1, 0, 0, 0, 1}, 0, lenOfWin)(true, [2]int{5, 8})
+	tCheckLine(t, []int{2, 0}, 2, lenOfWin)(false, noResult)
+	tCheckLine(t, []int{2, 1}, 2, lenOfWin)(false, noResult)
+	tCheckLine(t, []int{1, 1}, 1, lenOfWin)(false, noResult)
+	tCheckLine(t, []int{2, 0, 2}, 2, lenOfWin-1)(false, noResult)
+	tCheckLine(t, []int{0, 2, 2}, 2, lenOfWin-1)(true, [2]int{1, 3})
+	tCheckLine(t, []int{1, 0, 0}, 1, lenOfWin-1)(false, noResult)
 }
 
 func tCheckLine(t *testing.T, l []int, want, more int) func(bool, [2]int) {
