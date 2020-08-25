@@ -100,3 +100,18 @@ func reverseOf(side int) (otherSide int) {
 
 	return SideBlack
 }
+
+func winnerOf(b board) int {
+	c := map[int]int{}
+	for _, s := range b {
+		c[s]++
+	}
+
+	if c[SideBlack] > c[SideWhite] {
+		return SideBlack
+	} else if c[SideBlack] < c[SideWhite] {
+		return SideWhite
+	}
+
+	return Blank
+}

@@ -6,10 +6,6 @@ type history [][3]int
 
 // Constants
 const (
-	Blank = iota
-	SideBlack
-	SideWhite
-
 	boardSize   = 8
 	top         = -boardSize
 	topRight    = 1 - boardSize
@@ -20,8 +16,13 @@ const (
 	left        = -1
 	topLeft     = -boardSize - 1
 
+	Blank = iota
+	SideBlack
+	SideWhite
+
 	StatusOpen
 	StatusStarted
+	StatusDraw
 	StatusEnd
 
 	OK
