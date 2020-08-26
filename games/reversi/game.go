@@ -2,10 +2,15 @@ package reversi
 
 import (
 	"encoding/json"
+	"fmt"
+
+	"github.com/google/uuid"
 )
 
 func NewGame() *Game {
-	return &Game{}
+	g := &Game{}
+	g.init()
+	return g
 }
 
 func Load(data []byte) (*Game, error) {
@@ -16,6 +21,7 @@ func Load(data []byte) (*Game, error) {
 	}
 
 	g := Game{
+		id:      m["id"].(string),
 		board:   m["board"].(board),
 		history: m["history"].(history),
 		status:  m["status"].(int),
@@ -26,17 +32,38 @@ func Load(data []byte) (*Game, error) {
 }
 
 type Game struct {
+	id      string
 	board   board
 	history history
 	status  int
 	players map[string]int
 }
 
+func (g *Game) Load(data []byte) (interface{}, error) {
+	g1, err := Load(data)
+	return g1, err
+}
+
+func (g *Game) New() interface{} {
+	g1 := NewGame()
+	g1.init()
+	return g1
+}
+
+func (g *Game) init() {
+	u, _ := uuid.NewRandom()
+	g.id = u.String()
+}
+
 // Play : playerSide, boardIndex
-func (g *Game) Play(commands []int) int {
-	b, h, s, _ := g.flat()
+func (g *Game) Play(id string, commands []int) int {
 	p := commands[0]
 	n := commands[1]
+	if g.players[id] != p {
+		return NotYourTurn
+	}
+
+	b, h, s, _ := g.flat()
 	r := testStep(b, h, s, p, n)
 	if r != OK {
 		return r
@@ -74,6 +101,7 @@ func (g *Game) Status() int {
 
 func (g *Game) Save() []byte {
 	m := map[string]interface{}{
+		"id":      g.ID(),
 		"board":   g.board,
 		"history": g.history,
 		"status":  g.status,
@@ -85,6 +113,7 @@ func (g *Game) Save() []byte {
 
 func (g *Game) Data(id string) map[string]interface{} {
 	m := map[string]interface{}{
+		"id":      g.ID(),
 		"board":   g.board,
 		"history": g.history,
 		"status":  g.status,
@@ -106,6 +135,23 @@ func (g *Game) Data(id string) map[string]interface{} {
 	}
 
 	return m
+}
+
+func (g *Game) Dict(r int) error {
+	if r != OK {
+		return fmt.Errorf("ERROR CODE %d", r)
+	}
+
+	return nil
+}
+
+func (g *Game) ID() string {
+	if g.id == "" {
+		u, _ := uuid.NewRandom()
+		g.id = u.String()
+	}
+
+	return g.id
 }
 
 func (g *Game) flat() (board, history, int, map[string]int) {
