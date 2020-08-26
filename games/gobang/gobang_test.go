@@ -1,4 +1,4 @@
-package tic
+package gobang
 
 import (
 	"testing"

@@ -1,4 +1,4 @@
-package tic
+package gobang
 
 type side int
 type board [boardSize * boardSize]int
