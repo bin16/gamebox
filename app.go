@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/bin16/gamebox/eventutil"
-	"github.com/bin16/gamebox/reversic"
+	"github.com/bin16/gamebox/games"
+
 	"github.com/bin16/gamebox/userc"
 	"github.com/gin-gonic/gin"
 )
@@ -26,21 +26,23 @@ func main() {
 	app.GET("/_debug", func(c *gin.Context) {
 		c.String(http.StatusOK, "username="+userc.Username(c))
 	})
-	app.POST("/reversi.create", reversic.CreateGame)
 
-	gr := app.Group("/reversi")
-	gr.GET("/", reversic.Index)
-	gr.GET("/:id", func(c *gin.Context) {
-		id := c.Param("id")
-		if sid, _ := c.Cookie("_sid"); sid != "" {
-			eventutil.UnSubscribe(id, sid)
-		}
-		c.Next()
-	}, reversic.Game)
-	gr.POST("/:id/game.stat", reversic.StatGame)
-	gr.POST("/:id/game.join", reversic.JoinGame)
-	gr.GET("/:id/game.events", reversic.GameEvents)
-	gr.POST("/:id/game.play/:name", reversic.PlayGame)
+	games.Reversi().Setup(app)
+
+	// app.POST("/reversi.create", reversic.CreateGame)
+	// gr := app.Group("/reversi")
+	// gr.GET("/", reversic.Index)
+	// gr.GET("/:id", func(c *gin.Context) {
+	// 	id := c.Param("id")
+	// 	if sid, _ := c.Cookie("_sid"); sid != "" {
+	// 		eventutil.UnSubscribe(id, sid)
+	// 	}
+	// 	c.Next()
+	// }, reversic.Game)
+	// gr.POST("/:id/game.stat", reversic.StatGame)
+	// gr.POST("/:id/game.join", reversic.JoinGame)
+	// gr.GET("/:id/game.events", reversic.GameEvents)
+	// gr.POST("/:id/game.play/:name", reversic.PlayGame)
 
 	app.Run(":2222")
 }

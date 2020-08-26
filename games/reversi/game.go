@@ -8,7 +8,12 @@ import (
 )
 
 func NewGame() *Game {
-	g := &Game{}
+	g := &Game{
+		status:  StatusOpen,
+		board:   [boardSize * boardSize]int{},
+		history: [][3]int{},
+		players: map[string]int{},
+	}
 	g.init()
 	return g
 }
@@ -20,12 +25,33 @@ func Load(data []byte) (*Game, error) {
 		return nil, err
 	}
 
+	bl := m["board"].([]interface{})
+	var b board
+	for i, c := range bl {
+		b[i] = int(c.(float64))
+	}
+
+	hl := m["history"].([]interface{})
+	var h history
+	for i, c := range hl {
+		hs := [3]int{}
+		for r, cr := range c.([]interface{}) {
+			hs[r] = int(cr.(float64))
+		}
+		h[i] = hs
+	}
+
+	p := map[string]int{}
+	for k, v := range m["players"].(map[string]interface{}) {
+		p[k] = int(v.(float64))
+	}
+
 	g := Game{
 		id:      m["id"].(string),
-		board:   m["board"].(board),
-		history: m["history"].(history),
-		status:  m["status"].(int),
-		players: m["players"].(map[string]int),
+		status:  int(m["status"].(float64)),
+		board:   b,
+		history: h,
+		players: p,
 	}
 
 	return &g, nil

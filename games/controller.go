@@ -40,6 +40,9 @@ type GameController struct {
 func (gc *GameController) Setup(g *gin.Engine) {
 	g.POST(fmt.Sprintf("/%s.create", gc.Namespace), gc.Create)
 	gr := g.Group("/" + gc.Namespace)
+	gr.GET("/", func(c *gin.Context) {
+		c.File(path.Join("static", gc.Namespace, "index.html"))
+	})
 	gr.GET("/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		if sid, _ := c.Cookie("_sid"); sid != "" {
@@ -70,7 +73,8 @@ func (gc *GameController) Create(c *gin.Context) {
 	g.Join(username)
 	storeutil.Set(g.ID(), g.Save())
 	c.JSON(http.StatusCreated, gin.H{
-		"ok": 1,
+		"ok":   1,
+		"game": g.Data(username),
 	})
 }
 
