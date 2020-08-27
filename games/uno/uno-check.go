@@ -1,26 +1,39 @@
 package uno
 
 func checkNextCard(h history, card int) bool {
-	pTurn := h[len(h)-1]
-	pAction := pTurn[1]
+	pAction, pCard, pSetColor := readHistory(h, len(h)-1)
 	if pAction == ActionPlayCard {
-		pCard := pTurn[2]
 		pColor, pNum := cardColorAndNum(pCard)
 		color, num := cardColorAndNum(card)
-		if pCard == CardWild { // Wild x Normal
-			pColor = pTurn[2]
-		} else if isDrawTwo(pCard) { // DrawTwo x DrawTwo
-			if !isDrawTwo(card) {
-				return false
+		// DrawTwo x DrawTwo
+		if isDrawTwo(pCard) {
+			if isDrawTwo(card) {
+				return true
 			}
+			return false
 		}
 
 		// WildDrawFour x WildDrawFour
+		if pCard == CardWildDrawFour {
+			if card == CardWildDrawFour {
+				return true
+			}
+			return false
+		}
+
+		// Wild x WildDrawFour
+		// Wild x Wild
 		// Normal x WildDrawFour
-		if card == CardWild || card == CardWildDrawFour {
+		// Normal x Wild
+		if card == CardWildDrawFour || card == CardWild {
 			return true
 		}
 
+		if isWild(pCard) {
+			pColor = pSetColor
+		}
+
+		// Normal x Normal
 		if pColor != color && pNum != num {
 			return false
 		}
