@@ -1,5 +1,9 @@
 package uno
 
+import (
+	"strings"
+)
+
 // Constants
 const (
 	CardRedZero = iota
@@ -68,6 +72,8 @@ const (
 	ColorSpecial
 	NotColor
 
+	NotNum
+
 	ModeStandard
 	ModeEndless
 	ModeEndlessBoom
@@ -85,8 +91,34 @@ const (
 
 var cardLibrary = []int{}
 var zeroCards, specialCards map[int]int
+var colors = map[int]string{
+	ColorRed:     "red",
+	ColorYellow:  "yellow",
+	ColorGreen:   "green",
+	ColorBlue:    "blue",
+	ColorSpecial: "special",
+	NotColor:     "not_color",
+}
+var numbers = map[int]string{
+	0:                "zero",
+	1:                "one",
+	2:                "two",
+	3:                "three",
+	4:                "four",
+	5:                "five",
+	6:                "six",
+	7:                "seven",
+	8:                "eight",
+	9:                "nine",
+	10:               "skip",
+	11:               "reverse",
+	12:               "drawtwo",
+	CardWild:         "wild",
+	CardWildDrawFour: "wilddrawfour",
+	NotNum:           "unknown",
+}
 
-type history [][3]int // player index, action, action param, time
+type history [][]int // player index, action, action param, time
 
 func init() {
 	zeroCards = map[int]int{
@@ -229,4 +261,57 @@ func cardColor(n int) int {
 	}
 
 	return NotColor
+}
+
+func readHistory(h history, i int) (action, card, setColor int) {
+	hi := h[i]
+	action = hi[1]
+	card = hi[2]
+	setColor = NotColor
+	if isWild(card) {
+		setColor = hi[3]
+	}
+
+	return
+}
+
+func historyColor(h history) int {
+	for i := len(h) - 1; i >= 0; i-- {
+		action, card, setColor := readHistory(h, i)
+		if action == ActionPlayCard {
+			if isWild(card) {
+				return setColor
+			} else {
+				return cardColor(card)
+			}
+		}
+	}
+
+	return NotColor
+}
+
+func nameOfColor(c int) string {
+	n, ok := colors[c]
+	if !ok {
+		return colors[NotColor]
+	}
+
+	return n
+}
+
+func nameOfNum(c int) string {
+	n, ok := numbers[c]
+	if !ok {
+		return numbers[NotNum]
+	}
+
+	return n
+}
+
+func nameOfCard(card int) string {
+	c, n := cardColorAndNum(card)
+	return strings.Join([]string{
+		nameOfColor(c),
+		nameOfNum(n),
+	}, "_")
 }
