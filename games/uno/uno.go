@@ -82,10 +82,11 @@ const (
 	StatusStarted
 	StatusEnded
 
-	ActionDraw     // draw, draw+draw_two draw+wild_draw_four, draw+12, draw+N,
-	ActionPlayCard // red+2, wild+red, yellow+skip, wild_draw_four+blue
-	ActionUNO      // uno
-	ActionCall     // call
+	ActionDraw      // draw, draw+draw_two draw+wild_draw_four, draw+12, draw+N,
+	ActionPlayCard  // red+2, wild+red, yellow+skip, wild_draw_four+blue
+	ActionUNO       // uno
+	ActionCheckUNO  // check_uno
+	ActionChallenge // challenge
 	ActionServerCommit
 )
 
@@ -118,7 +119,8 @@ var numbers = map[int]string{
 	NotNum:           "unknown",
 }
 
-type history [][]int // player index, action, action param, time
+type players map[int][]int // index -> cards
+type history [][]int       // player index, action, action param, time
 
 func init() {
 	zeroCards = map[int]int{

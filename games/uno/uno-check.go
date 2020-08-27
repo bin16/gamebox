@@ -41,3 +41,22 @@ func checkNextCard(h history, card int) bool {
 
 	return true
 }
+
+func checkAction(h history, action int) bool {
+	if action == ActionDraw {
+		return true
+	}
+
+	pAction, pCard, _ := readHistory(h, len(h)-1)
+	if pAction == ActionPlayCard {
+		if action == ActionChallenge {
+			return pCard == CardWildDrawFour
+		}
+
+		if action == ActionCheckUNO || action == ActionPlayCard {
+			return true
+		}
+	}
+
+	return false
+}
