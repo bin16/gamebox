@@ -116,7 +116,7 @@ var numbers = map[int]string{
 	12:               "drawtwo",
 	CardWild:         "wild",
 	CardWildDrawFour: "wilddrawfour",
-	NotNum:           "unknown",
+	NotNum:           "not_num",
 }
 
 type players map[int][]int // index -> cards
